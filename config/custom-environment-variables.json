@@ -1,0 +1,13 @@
+{
+  "directories": {
+    "segments": "SEGMENTS_DIR",
+    "videos": "VIDEOS_DIR"
+  },
+  "debug": {
+    "preventTwitter": "DEBUG_PREVENT_TWITTER"
+  },
+  "server": {
+    "address": "HOST",
+    "port": "PORT"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "directories": {
+    "segments": "",
+    "videos": ""
+  },
+  "debug": {
+    "preventTwitter": 0
+  },
+  "server": {
+    "address": "0.0.0.0",
+    "port": 80
+  },
+  "twitter": {
+    "base": "https://twitter.com",
+    "cdn": "https://video.twimg.com",
+    "login": "/i/flow/login",
+    "post": "/:username/status/:postId",
+    "accounts": [
+      {
+        "username": "",
+        "password": ""
+      }
+    ]
+  }
+}

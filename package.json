@@ -1,0 +1,68 @@
+{
+  "name": "twitter-video-downloader",
+  "description": "Provides an api to download twitter videos",
+  "version": "0.0.0",
+  "author": "Ben Chiang <chiangbenjamin991@gmail.com>",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog",
+      "maxHeaderWidth": 72,
+      "maxLineWidth": 72
+    },
+    "src": "src/",
+    "dist": "build/"
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "config": "^3.3.7",
+    "express": "^4.18.1",
+    "fs-extra": "^10.1.0",
+    "handbrake-js": "^6.0.0",
+    "helmet": "^5.1.0",
+    "m3u8-parser": "^4.7.1",
+    "morgan": "^1.10.0",
+    "playwright": "^1.23.0"
+  },
+  "devDependencies": {
+    "@forvais/eslint-config-base": "^1.0.0",
+    "@forvais/eslint-config-node": "^1.0.0",
+    "@tsconfig/node16": "^1.0.2",
+    "@types/axios": "^0.14.0",
+    "@types/config": "^0.0.41",
+    "@types/express": "^4.17.13",
+    "@types/fs-extra": "^9.0.13",
+    "@types/handbrake-js": "^5.0.1",
+    "@types/jest": "^27.4.1",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^17.0.25",
+    "@typescript-eslint/eslint-plugin": "^5.20.0",
+    "@typescript-eslint/parser": "^5.20.0",
+    "commitizen": "^4.2.4",
+    "conventional-changelog-cli": "^2.2.2",
+    "cross-env": "^7.0.3",
+    "cz-conventional-changelog": "^3.3.0",
+    "dotenv": "^16.0.0",
+    "eslint": "^8.13.0",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^27.5.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.4",
+    "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.6.6",
+    "tsconfig-paths": "^3.14.1",
+    "typescript": "^4.6.3"
+  },
+  "license": "MIT",
+  "scripts": {
+    "commit": "git-cz",
+    "lint": "eslint --ext ts src/",
+    "lint:all": "eslint .",
+    "test": "jest",
+    "!build:tsc": "rimraf build/ && tsc -p tsconfig.release.json && tsc-alias -p tsconfig.release.json",
+    "!build:docker": "docker build -t $npm_package_name:$npm_package_version .",
+    "build": "npm run !build:tsc",
+    "start": "node ./build/",
+    "start:dev": "cross-env NODE_ENV=development ts-node-dev --respawn -r tsconfig-paths/register -r dotenv/config ./src",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+  }
+}
