@@ -9,5 +9,11 @@
   "server": {
     "address": "HOST",
     "port": "PORT"
+  },
+  "twitter": {
+    "account": {
+      "username": "TWITTER_USERNAME",
+      "password": "TWITTER_PASSWORD"
+    }
   }
 }
