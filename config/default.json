@@ -15,11 +15,9 @@
     "cdn": "https://video.twimg.com",
     "login": "/i/flow/login",
     "post": "/:username/status/:postId",
-    "accounts": [
-      {
-        "username": "",
-        "password": ""
-      }
-    ]
+    "account": {
+      "username": "",
+      "password": ""
+    }
   }
 }
