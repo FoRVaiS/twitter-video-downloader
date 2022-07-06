@@ -25,6 +25,7 @@ export class Server extends EventEmitter {
     this.browserArgs = browserArgs;
 
     this.getBrowser()
+      .then(browser => Promise.resolve(browser.contexts()[0]!))
       .then(openTwitter(!preventTwitter))
       .then(() => {
         this.initializeMiddleware();
@@ -67,9 +68,9 @@ export class Server extends EventEmitter {
     if (!context) throw Error('Browser context does not exist');
     const pages: Array<Page> = context.pages();
 
-    if (pages.length > 0) return pages[0]!;
+    if (pages.length <= 0) await openTwitter(!preventTwitter)(context);
 
-    throw Error('Could not find any open pages');
+    return context.pages()[0]!;
   }
 
   public getExpress(): Express {
