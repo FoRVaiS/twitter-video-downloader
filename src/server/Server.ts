@@ -34,7 +34,10 @@ export class Server extends EventEmitter {
   }
 
   private async initializeBrowser(args: TBrowserArgs): Promise<Browser> {
-    if (!this.browser) this.browser = await device.launch(args);
+    if (!this.browser) {
+      this.browser = await device.launch(args);
+      await this.browser.newContext();
+    }
 
     return this.browser;
   }
