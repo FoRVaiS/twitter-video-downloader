@@ -6,7 +6,7 @@ import config from 'config';
 
 const defaultVideoDirectory = config.get<string>('directories.videos');
 
-export const createVideoFile = (segmentFilepath: string) => new Promise<string>((resolve, reject) => {
+export const processSegmentFile = (segmentFilepath: string) => new Promise<string>((resolve, reject) => {
   const videoDirectory = defaultVideoDirectory || path.join(__dirname, '..', '..', '__processed');
   fs.ensureDirSync(videoDirectory);
 

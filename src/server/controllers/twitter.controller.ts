@@ -6,7 +6,7 @@ import { fetchLeafManifest } from '../../components/fetchLeafManifest';
 import { downloadSegments } from '../../components/downloadSegments';
 import { mergeSegments } from '../../components/mergeSegments';
 import { createSegmentFile } from '../../components/createSegmentFile';
-import { createVideoFile } from '../../components/createVideoFile';
+import { processSegmentFile } from '../../components/processSegmentFile';
 
 const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, res) => {
   const { getTwitterPage } = ctx;
@@ -18,13 +18,9 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
   const fileStream = mergeSegments(segmentFiles);
   const segmentFilepath = createSegmentFile(fileStream, `@${req.params.username}-${req.params.postId}.m4s`);
 
-  try {
-    const videoFilepath = await createVideoFile(segmentFilepath);
-
-    res.status(200).download(videoFilepath);
-  } catch (e) {
-    res.status(500).json({ err: e });
-  }
+  processSegmentFile(segmentFilepath)
+    .then(() => res.status(200).download(processedFilepath))
+    .catch(e => res.status(500).json({ err: e }));
 };
 
 export default {
