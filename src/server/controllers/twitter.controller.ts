@@ -4,6 +4,8 @@ import type { RouterCtx } from '../../types/twitter-video-downloader';
 import path from 'path';
 import config from 'config';
 
+import fs from 'fs-extra';
+
 import { fetchRootManifest } from '../../components/fetchRootManifest';
 import { fetchLeafManifest } from '../../components/fetchLeafManifest';
 import { downloadSegments } from '../../components/downloadSegments';
@@ -21,12 +23,16 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
   const segmentFilepath = segmentDirectory ? path.join(segmentDirectory, `${filename}.m4s`) : path.join(__dirname, '..', '..', '..', '__videos', `${filename}.m4s`);
   const processedFilepath = processedDirectory ? path.join(processedDirectory, `${filename}.mp4`) : path.join(__dirname, '..', '..', '..', '__processed', `${filename}.mp4`);
 
-  const page = await getTwitterPage();
-  const rootManifest = await fetchRootManifest(page, req.originalUrl);
-  const leafManifest = await fetchLeafManifest(rootManifest);
-  const segmentFiles = await downloadSegments(leafManifest);
-  const fileStream = mergeSegments(segmentFiles);
-  createSegmentFile(fileStream, segmentFilepath);
+  if (fs.pathExistsSync(processedFilepath)) return res.status(200).download(processedFilepath);
+
+  if (!fs.pathExistsSync(segmentFilepath)) {
+    const page = await getTwitterPage();
+    const rootManifest = await fetchRootManifest(page, req.originalUrl);
+    const leafManifest = await fetchLeafManifest(rootManifest);
+    const segmentFiles = await downloadSegments(leafManifest);
+    const fileStream = mergeSegments(segmentFiles);
+    createSegmentFile(fileStream, segmentFilepath);
+  }
 
   processSegmentFile(segmentFilepath, processedFilepath)
     .then(() => res.status(200).download(processedFilepath))
