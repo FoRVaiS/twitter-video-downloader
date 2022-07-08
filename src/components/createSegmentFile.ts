@@ -3,18 +3,14 @@ import type { Readable } from 'stream';
 import path from 'path';
 
 import fs from 'fs-extra';
-import config from 'config';
 
-const defaultSegmentDirectory = config.get<string>('directories.segments');
+export const createSegmentFile = (fileStream: Readable, segmentFilepath: string) => {
+  const segmentDirectory = path.parse(segmentFilepath).dir;
 
-export const createSegmentFile = (fileStream: Readable, filename: string) => {
-  const videosDirectory = defaultSegmentDirectory || path.join(__dirname, '..', '..', '__videos');
-  fs.ensureDirSync(videosDirectory);
+  fs.ensureDirSync(segmentDirectory);
 
-  const filepath = path.join(videosDirectory, filename);
-
-  const wStream = fs.createWriteStream(filepath);
+  const wStream = fs.createWriteStream(segmentFilepath);
   fileStream.pipe(wStream);
   
-  return filepath;
+  return segmentFilepath;
 };
