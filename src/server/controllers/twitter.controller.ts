@@ -34,7 +34,7 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
     createSegmentFile(fileStream, segmentFilepath);
   }
 
-  processSegmentFile(segmentFilepath, processedFilepath)
+  return processSegmentFile(segmentFilepath, processedFilepath)
     .then(() => res.status(200).download(processedFilepath))
     .catch(e => res.status(500).json({ err: e }));
 };
