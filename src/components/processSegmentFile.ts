@@ -2,20 +2,16 @@ import path from 'path';
 
 import * as handbrake from 'handbrake-js';
 import fs from 'fs-extra';
-import config from 'config';
 
-const defaultVideoDirectory = config.get<string>('directories.videos');
+export const processSegmentFile = (segmentFilepath: string, processedFilepath: string) => new Promise<string>((resolve, reject) => {
+  const processedDirectory = path.parse(processedFilepath).dir;
 
-export const processSegmentFile = (segmentFilepath: string) => new Promise<string>((resolve, reject) => {
-  const videoDirectory = defaultVideoDirectory || path.join(__dirname, '..', '..', '__processed');
-  fs.ensureDirSync(videoDirectory);
+  fs.ensureDirSync(processedDirectory);
 
-  const videoFilepath = path.join(videoDirectory, `${path.parse(segmentFilepath).name}.mp4`);
-  
   handbrake.spawn({
     input: segmentFilepath,
-    output: videoFilepath,
+    output: processedFilepath,
   })
-    .on('complete', () => resolve(videoFilepath))
+    .on('complete', () => resolve(processedFilepath))
     .on('error', err => reject(err));
 });
