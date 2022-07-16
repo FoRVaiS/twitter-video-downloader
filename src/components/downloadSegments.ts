@@ -3,11 +3,14 @@ import config from 'config';
 
 import { parseManifest } from './parseManifest';
 
+import { consoleLogger as logger } from './loggers';
+
 const twitterCdnDomain = config.get<string>('twitter.cdn');
 
 export const downloadSegments = async (leafManifest: ReturnType<typeof parseManifest>): Promise<Array<string>> => {
   const segmentUrls = [{ uri: leafManifest.custom?.header as string } as typeof leafManifest['segments'][0], ...leafManifest.segments];
 
+  logger.info('Fetching segment files.');
   const segmentResponses: Array<AxiosResponse> = await Promise.all(segmentUrls
     .filter(segmentUrl => segmentUrl)
     .map(segment => segment.uri && axios(twitterCdnDomain + segment.uri, {
