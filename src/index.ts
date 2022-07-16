@@ -9,13 +9,11 @@ import { consoleLogger as logger } from './components/loggers';
 
 const expressServer = new Server(getRoutes, { headless: process.env.NODE_ENV !== 'development' });
 
-expressServer.on('browser_ready', () => {
-  const server = httpServer.createServer(expressServer.getExpress());
+const server = httpServer.createServer(expressServer.getExpress());
 
-  const port = config.get<number>('server.port');
-  const address = config.get<string>('server.address');
+const port = config.get<number>('server.port');
+const address = config.get<string>('server.address');
 
-  server.listen(port, address, () => {
-    logger.info(`Listening on ${address}:${port}.`);
-  });
+server.listen(port, address, () => {
+  logger.info(`Listening on ${address}:${port}.`);
 });

@@ -7,33 +7,24 @@ import { RouterCtx, TBrowserArgs } from '../types/twitter-video-downloader';
 
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { EventEmitter } from 'stream';
 import { openTwitter } from '../components/openTwitter';
 
 import { accessLogger } from '../components/loggers';
 
 const preventTwitter = config.get<boolean>('debug.preventTwitter');
 
-export class Server extends EventEmitter {
+export class Server {
   private app: Express;
   private browser?: Browser;
   private browserArgs: TBrowserArgs;
   
   constructor(router: (ctx: RouterCtx) => Router, browserArgs?: TBrowserArgs) {
-    super();
-
     this.app = express();
 
     this.browserArgs = browserArgs;
 
-    this.getBrowser()
-      .then(browser => Promise.resolve(browser.contexts()[0]!))
-      .then(openTwitter(!preventTwitter))
-      .then(() => {
-        this.initializeMiddleware();
-        this.initializeRoutes(router);
-        this.emit('browser_ready');
-      });
+    this.initializeMiddleware();
+    this.initializeRoutes(router);
   }
 
   private async initializeBrowser(args: TBrowserArgs): Promise<Browser> {
