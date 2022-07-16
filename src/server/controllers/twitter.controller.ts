@@ -13,6 +13,8 @@ import { mergeSegments } from '../../components/mergeSegments';
 import { createSegmentFile } from '../../components/createSegmentFile';
 import { processSegmentFile } from '../../components/processSegmentFile';
 
+import { consoleLogger as logger } from '../../components/loggers';
+
 const segmentDirectory = config.get<string>('directories.segments');
 const processedDirectory = config.get<string>('directories.videos');
 
@@ -23,7 +25,10 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
   const segmentFilepath = segmentDirectory ? path.join(segmentDirectory, `${filename}.m4s`) : path.join(__dirname, '..', '..', '..', '__videos', `${filename}.m4s`);
   const processedFilepath = processedDirectory ? path.join(processedDirectory, `${filename}.mp4`) : path.join(__dirname, '..', '..', '..', '__processed', `${filename}.mp4`);
 
-  if (fs.pathExistsSync(processedFilepath)) return res.status(200).download(processedFilepath);
+  if (fs.pathExistsSync(processedFilepath)) {
+    logger.warn('Video has already been processed.');
+    return res.status(200).download(processedFilepath);
+  }
 
   if (!fs.pathExistsSync(segmentFilepath)) {
     const page = await getTwitterPage();
@@ -32,6 +37,8 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
     const segmentFiles = await downloadSegments(leafManifest);
     const fileStream = mergeSegments(segmentFiles);
     createSegmentFile(fileStream, segmentFilepath);
+  } else {
+    logger.warn('Segment file already exists, moving onto processing.');
   }
 
   return processSegmentFile(segmentFilepath, processedFilepath)
