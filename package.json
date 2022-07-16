@@ -21,7 +21,8 @@
     "helmet": "^5.1.0",
     "m3u8-parser": "^4.7.1",
     "morgan": "^1.10.0",
-    "playwright": "^1.23.0"
+    "playwright": "^1.23.0",
+    "winston": "^3.8.1"
   },
   "devDependencies": {
     "@forvais/eslint-config-base": "^1.0.0",

@@ -10,6 +10,8 @@ import morgan from 'morgan';
 import { EventEmitter } from 'stream';
 import { openTwitter } from '../components/openTwitter';
 
+import { accessLogger } from '../components/loggers';
+
 const preventTwitter = config.get<boolean>('debug.preventTwitter');
 
 export class Server extends EventEmitter {
@@ -45,7 +47,11 @@ export class Server extends EventEmitter {
 
   private initializeMiddleware() {
     this.app.use(helmet());
-    this.app.use(morgan('combined'));
+    this.app.use(morgan('combined', {
+      stream: {
+        write: msg => accessLogger.info(msg),
+      },
+    }));
   }
 
   private async initializeRoutes(router: (ctx: RouterCtx) => Router) {
