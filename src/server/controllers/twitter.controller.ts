@@ -33,6 +33,9 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
   if (!fs.pathExistsSync(segmentFilepath)) {
     const page = await getTwitterPage();
     const rootManifest = await fetchRootManifest(page, req.originalUrl);
+
+    page.close();
+
     const leafManifest = await fetchLeafManifest(rootManifest);
     const segmentFiles = await downloadSegments(leafManifest);
     const fileStream = mergeSegments(segmentFiles);
