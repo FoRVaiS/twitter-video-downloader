@@ -20,6 +20,6 @@ export const interceptManifest = async (page: Page, url: string) => new Promise<
   })
     .then(() => {
       logger.info(`Navigating to ${url}.`);
-      page.goto(url);
+      return page.goto(url);
     });
 });
