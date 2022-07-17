@@ -19,7 +19,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "type": "node"
+            "type": "node",
+            "outputCapture": "std"
         },
         {
             "name": "Launch Development",
@@ -35,7 +36,8 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "type": "node"
+            "type": "node",
+            "outputCapture": "std"
         },
     ]
 }
