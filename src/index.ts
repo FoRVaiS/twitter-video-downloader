@@ -14,6 +14,8 @@ const server = httpServer.createServer(expressServer.getExpress());
 const port = config.get<number>('server.port');
 const address = config.get<string>('server.address');
 
-server.listen(port, address, () => {
-  logger.info(`Listening on ${address}:${port}.`);
+expressServer.on('browser_ready', () => {
+  server.listen(port, address, () => {
+    logger.info(`Listening on ${address}:${port}.`);
+  });
 });

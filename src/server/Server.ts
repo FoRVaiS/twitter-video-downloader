@@ -1,3 +1,5 @@
+import { EventEmitter } from 'stream';
+
 import config from 'config';
 
 import express, { type Express, type Router } from 'express';
@@ -9,25 +11,31 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { openTwitter } from '../components/openTwitter';
 
-import { accessLogger } from '../components/loggers';
+import { accessLogger, consoleLogger } from '../components/loggers';
 
 const preventTwitter = config.get<boolean>('debug.preventTwitter');
 
-export class Server {
+export class Server extends EventEmitter {
   private app: Express;
   private browser?: Browser;
   private browserArgs: TBrowserArgs;
   
   constructor(router: (ctx: RouterCtx) => Router, browserArgs?: TBrowserArgs) {
+    super();
+
     this.app = express();
 
     this.browserArgs = browserArgs;
 
     this.getContext()
       .then(async context => {
+        consoleLogger.info('Logging into Twitter.');
         await openTwitter(!preventTwitter)(context);
+        consoleLogger.info('Login successful.');
 
         context.pages().forEach(page => page.close());
+
+        this.emit('browser_ready');
       });
 
     this.initializeMiddleware();
