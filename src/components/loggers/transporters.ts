@@ -2,7 +2,7 @@ import path from 'path';
 
 import winston, { format } from 'winston';
 
-const logDirectory = path.join(__dirname, '..', '..', 'logs');
+const logDirectory = path.join(__dirname, '..', '..', '..', 'logs');
 const combinedLogFilepath = path.join(logDirectory, 'combined.log');
 const accessLogFilepath = path.join(logDirectory, 'access.log');
 const processingLogFilepath = path.join(logDirectory, 'processing.log');
