@@ -1,7 +1,7 @@
 {
   "name": "twitter-video-downloader",
   "description": "Provides an api to download twitter videos",
-  "version": "0.0.0",
+  "version": "1.0.0-alpha.2",
   "author": "Ben Chiang <chiangbenjamin991@gmail.com>",
   "config": {
     "commitizen": {
