@@ -7,33 +7,35 @@ import { RouterCtx, TBrowserArgs } from '../types/twitter-video-downloader';
 
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { EventEmitter } from 'stream';
 import { openTwitter } from '../components/openTwitter';
 
 import { accessLogger } from '../components/loggers';
 
 const preventTwitter = config.get<boolean>('debug.preventTwitter');
 
-export class Server extends EventEmitter {
+export class Server {
   private app: Express;
   private browser?: Browser;
   private browserArgs: TBrowserArgs;
   
   constructor(router: (ctx: RouterCtx) => Router, browserArgs?: TBrowserArgs) {
-    super();
-
     this.app = express();
 
     this.browserArgs = browserArgs;
 
     this.getBrowser()
-      .then(browser => Promise.resolve(browser.contexts()[0]!))
-      .then(openTwitter(!preventTwitter))
-      .then(() => {
-        this.initializeMiddleware();
-        this.initializeRoutes(router);
-        this.emit('browser_ready');
+      .then(async browser => {
+        const [context] = browser.contexts();
+
+        if (context) {
+          await openTwitter(!preventTwitter)(context);
+  
+          context.pages().forEach(page => page.close());
+        }
       });
+
+    this.initializeMiddleware();
+    this.initializeRoutes(router);
   }
 
   private async initializeBrowser(args: TBrowserArgs): Promise<Browser> {
@@ -72,11 +74,11 @@ export class Server extends EventEmitter {
     const [context] = await browser.contexts();
 
     if (!context) throw Error('Browser context does not exist');
-    const pages: Array<Page> = context.pages();
+    let [page] = context.pages();
 
-    if (pages.length <= 0) await openTwitter(!preventTwitter)(context);
+    if (!page) page = await context.newPage();
 
-    return context.pages()[0]!;
+    return page;
   }
 
   public getExpress(): Express {
