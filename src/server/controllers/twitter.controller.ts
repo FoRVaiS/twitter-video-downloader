@@ -19,7 +19,7 @@ const segmentDirectory = config.get<string>('directories.segments');
 const processedDirectory = config.get<string>('directories.videos');
 
 const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, res) => {
-  const { getTwitterPage } = ctx;
+  const { getContext } = ctx;
 
   const filename = `@${req.params.username}-${req.params.postId}`;
   const segmentFilepath = segmentDirectory ? path.join(segmentDirectory, `${filename}.m4s`) : path.join(__dirname, '..', '..', '..', '__videos', `${filename}.m4s`);
@@ -31,7 +31,8 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
   }
 
   if (!fs.pathExistsSync(segmentFilepath)) {
-    const page = await getTwitterPage();
+    const context = await getContext();
+    const page = await context.newPage();
     const rootManifest = await fetchRootManifest(page, req.originalUrl);
 
     page.close();
