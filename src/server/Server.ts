@@ -1,7 +1,7 @@
 import config from 'config';
 
 import express, { type Express, type Router } from 'express';
-import { type Browser, firefox as device, Page } from 'playwright';
+import { type Browser, type BrowserContext, firefox as device } from 'playwright';
 
 import { RouterCtx, TBrowserArgs } from '../types/twitter-video-downloader';
 
@@ -51,7 +51,7 @@ export class Server {
 
   private async initializeRoutes(router: (ctx: RouterCtx) => Router) {
     this.app.use(router({
-      getTwitterPage: this.getTwitterPage.bind(this),
+      getContext: this.getContext.bind(this),
     }));
   }
 
@@ -68,15 +68,6 @@ export class Server {
     if (!context) context = await browser.newContext();
 
     return context;
-  }
-
-  private async getTwitterPage(): Promise<Page> {
-    const context = await this.getContext();
-    let [page] = context.pages();
-
-    if (!page) page = await context.newPage();
-
-    return page;
   }
 
   public getExpress(): Express {
