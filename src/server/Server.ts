@@ -23,15 +23,11 @@ export class Server {
 
     this.browserArgs = browserArgs;
 
-    this.getBrowser()
-      .then(async browser => {
-        const [context] = browser.contexts();
+    this.getContext()
+      .then(async context => {
+        await openTwitter(!preventTwitter)(context);
 
-        if (context) {
-          await openTwitter(!preventTwitter)(context);
-  
-          context.pages().forEach(page => page.close());
-        }
+        context.pages().forEach(page => page.close());
       });
 
     this.initializeMiddleware();
@@ -39,10 +35,7 @@ export class Server {
   }
 
   private async initializeBrowser(args: TBrowserArgs): Promise<Browser> {
-    if (!this.browser) {
-      this.browser = await device.launch(args);
-      await this.browser.newContext();
-    }
+    if (!this.browser) this.browser = await device.launch(args);
 
     return this.browser;
   }
@@ -68,12 +61,17 @@ export class Server {
     return browser;
   }
 
-  private async getTwitterPage(): Promise<Page> {
+  private async getContext(): Promise<BrowserContext> {
     const browser = await this.getBrowser();
+    let [context] = browser.contexts();
 
-    const [context] = await browser.contexts();
+    if (!context) context = await browser.newContext();
 
-    if (!context) throw Error('Browser context does not exist');
+    return context;
+  }
+
+  private async getTwitterPage(): Promise<Page> {
+    const context = await this.getContext();
     let [page] = context.pages();
 
     if (!page) page = await context.newPage();
