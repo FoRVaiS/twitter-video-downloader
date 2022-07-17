@@ -23,6 +23,17 @@ export class Server {
 
     this.browserArgs = browserArgs;
 
+    this.getBrowser()
+      .then(async browser => {
+        const [context] = browser.contexts();
+
+        if (context) {
+          await openTwitter(!preventTwitter)(context);
+  
+          context.pages().forEach(page => page.close());
+        }
+      });
+
     this.initializeMiddleware();
     this.initializeRoutes(router);
   }
