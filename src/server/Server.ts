@@ -63,11 +63,11 @@ export class Server {
     const [context] = await browser.contexts();
 
     if (!context) throw Error('Browser context does not exist');
-    const pages: Array<Page> = context.pages();
+    let [page] = context.pages();
 
-    if (pages.length <= 0) await openTwitter(!preventTwitter)(context);
+    if (!page) page = await context.newPage();
 
-    return context.pages()[0]!;
+    return page;
   }
 
   public getExpress(): Express {
