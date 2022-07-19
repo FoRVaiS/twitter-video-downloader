@@ -27,13 +27,15 @@ export class Server extends EventEmitter {
 
     this.browserArgs = browserArgs;
 
-    this.getContext()
-      .then(async context => {
+    this.getBrowser()
+      .then(async browser => {
+        const context = await browser.newContext();
+
         consoleLogger.info('Logging into Twitter.');
         await openTwitter(!preventTwitter)(context);
         consoleLogger.info('Login successful.');
 
-        context.pages().forEach(page => page.close());
+        await context.close();
 
         this.emit('browser_ready');
       });
@@ -59,7 +61,7 @@ export class Server extends EventEmitter {
 
   private async initializeRoutes(router: (ctx: RouterCtx) => Router) {
     this.app.use(router({
-      getContext: this.getContext.bind(this),
+      getBrowser: this.getBrowser.bind(this),
     }));
   }
 
@@ -67,15 +69,6 @@ export class Server extends EventEmitter {
     const browser = this.initializeBrowser(this.browserArgs);
     
     return browser;
-  }
-
-  private async getContext(): Promise<BrowserContext> {
-    const browser = await this.getBrowser();
-    let [context] = browser.contexts();
-
-    if (!context) context = await browser.newContext();
-
-    return context;
   }
 
   public getExpress(): Express {
