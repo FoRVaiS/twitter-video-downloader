@@ -3,7 +3,7 @@ import { EventEmitter } from 'stream';
 import config from 'config';
 
 import express, { type Express, type Router } from 'express';
-import { type Browser, type BrowserContext, firefox as device } from 'playwright';
+import { type Browser, firefox as device } from 'playwright';
 
 import { RouterCtx, TBrowserArgs } from '../types/twitter-video-downloader';
 
