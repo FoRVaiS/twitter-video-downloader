@@ -3,7 +3,7 @@ import { EventEmitter } from 'stream';
 import config from 'config';
 
 import express, { type Express, type Router } from 'express';
-import { type Browser, type BrowserContext, firefox as device } from 'playwright';
+import { type Browser, firefox as device } from 'playwright';
 
 import { RouterCtx, TBrowserArgs } from '../types/twitter-video-downloader';
 
@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import { openTwitter } from '../components/openTwitter';
 
 import { accessLogger, consoleLogger } from '../components/loggers';
+import { delay } from '../components/delay';
 
 const preventTwitter = config.get<boolean>('debug.preventTwitter');
 
@@ -27,13 +28,18 @@ export class Server extends EventEmitter {
 
     this.browserArgs = browserArgs;
 
-    this.getContext()
-      .then(async context => {
+    this.getBrowser()
+      .then(async browser => {
+        const context = await browser.newContext();
+
         consoleLogger.info('Logging into Twitter.');
         await openTwitter(!preventTwitter)(context);
         consoleLogger.info('Login successful.');
 
-        context.pages().forEach(page => page.close());
+        await delay(5e3);
+
+        await context.storageState({ path: 'state.json' });
+        await context.close();
 
         this.emit('browser_ready');
       });
@@ -59,7 +65,7 @@ export class Server extends EventEmitter {
 
   private async initializeRoutes(router: (ctx: RouterCtx) => Router) {
     this.app.use(router({
-      getContext: this.getContext.bind(this),
+      getBrowser: this.getBrowser.bind(this),
     }));
   }
 
@@ -67,15 +73,6 @@ export class Server extends EventEmitter {
     const browser = this.initializeBrowser(this.browserArgs);
     
     return browser;
-  }
-
-  private async getContext(): Promise<BrowserContext> {
-    const browser = await this.getBrowser();
-    let [context] = browser.contexts();
-
-    if (!context) context = await browser.newContext();
-
-    return context;
   }
 
   public getExpress(): Express {
