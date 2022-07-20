@@ -35,6 +35,7 @@ export class Server extends EventEmitter {
         await openTwitter(!preventTwitter)(context);
         consoleLogger.info('Login successful.');
 
+        await context.storageState({ path: 'state.json' });
         await context.close();
 
         this.emit('browser_ready');

@@ -32,7 +32,7 @@ const downloadVideoMiddleware = (ctx: RouterCtx): RequestHandler => async (req, 
 
   if (!fs.pathExistsSync(segmentFilepath)) {
     const browser = await getBrowser();
-    const context = await browser.newContext();
+    const context = await browser.newContext({ storageState: 'state.json' });
     const page = await context.newPage();
     const rootManifest = await fetchRootManifest(page, req.originalUrl);
 
