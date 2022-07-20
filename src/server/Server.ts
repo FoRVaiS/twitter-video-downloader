@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import { openTwitter } from '../components/openTwitter';
 
 import { accessLogger, consoleLogger } from '../components/loggers';
+import { delay } from '../components/delay';
 
 const preventTwitter = config.get<boolean>('debug.preventTwitter');
 
@@ -34,6 +35,8 @@ export class Server extends EventEmitter {
         consoleLogger.info('Logging into Twitter.');
         await openTwitter(!preventTwitter)(context);
         consoleLogger.info('Login successful.');
+
+        await delay(5e3);
 
         await context.storageState({ path: 'state.json' });
         await context.close();
