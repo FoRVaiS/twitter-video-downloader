@@ -15,6 +15,7 @@
     "cdn": "https://video.twimg.com",
     "login": "/i/flow/login",
     "post": "/:username/status/:postId",
+    "postManifest": "/ext_tw_video/:postId/pu/pl/:manifestId",
     "account": {
       "username": "",
       "password": ""
