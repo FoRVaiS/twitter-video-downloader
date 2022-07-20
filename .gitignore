@@ -122,3 +122,6 @@ build/
 
 # config
 config/local*
+
+# playwright
+state.json

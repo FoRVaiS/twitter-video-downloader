@@ -12,3 +12,4 @@ config/local*
 CHANGELOG.md
 README.md
 jest.config.js
+state.json
